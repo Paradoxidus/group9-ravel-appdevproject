@@ -12,22 +12,22 @@ Because of user complaints, new and fresh artists observe that their music recei
 
 ## 2. Core Features
 Agentic AI Assistant (Debussy): Ravel features an integrated conversational AI agent named Debussy that personalizes the listening experience, creates custom playlists based on user mood, and actively prioritizes underrepresented artists.
-
 - Listener & Musician Portals: Users can register as standard listeners to discover music, or as musicians to upload and distribute their own .mp3 tracks.
-
 - Dynamic Library Management: Users can create custom playlists, save tracks, and manage their listening history seamlessly.
-
 - Algorithmic Discovery: The platform tracks user listening habits to generate customized suggestions and highlights artists with lower stream counts to democratize exposure.
 
 ## 3. Tech Stack
 - Frontend: HTML, CSS, JavaScript (Custom UI with interactive player overlays and modals).
-
 - Backend: Python with the Flask web framework.
-
 - Database: SQLite3 for managing users, artists, tracks, playlists, and AI chat sessions.
-
 - AI Integration: OpenAI Python client connected to the DashScope API (Qwen3.5-plus model) for the Debussy assistant.
 
+## 4. Local Setup & Installation
+Follow these steps to get Ravel running on your local machine.
+
+### a. Prerequisites
+- Python 3.8+ installed on your system.
+- Basic knowledge of running terminal commands.
 ```
 git clone https://github.com/yourusername/ravel.git
 cd ravel
