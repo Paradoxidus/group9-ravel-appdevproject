@@ -1,2 +1,4 @@
 # group9-ravel-appdevproject
-This repository serves as the place where most of the software's files, data, code, and functions are located for possible forks and view.
+
+
+# Welcome to Ravel's Github Repository! Here are the programming files and scripts that define the internal paradigm of Ravel. Ravel is a web-based music streaming application similar to Spotify, YouTube Music, Apple Music, etc. However, it focuses heavily 
