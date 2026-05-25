@@ -138,9 +138,10 @@ Go back to the Web tab and click the green Reload button at the top. Your instan
 
 *** This covers everything needed to get Ravel live. Let me know if you'd like to add a "Future Features" or "Contributing" section to round out the bottom of the repository!
 
-### 6. Future Roadmap & Known Limitations
+### 6. Future Roadmap & Known Limitations and Bugs
 Ravel was developed as an exploratory application development project. While fully functional, there are several areas planned for future expansion:
 - Advanced AI Context: Currently, Debussy handles immediate conversational context. Future updates would implement a more robust Retrieval-Augmented Generation (RAG) pipeline to give the assistant deeper memory of a user's long-term listening history.
 - Expanded Audio Support: The upload feature is currently limited to .mp3 files. Adding support for .wav and .flac with automatic compression is a priority.
 - Enhanced Recommendation Algorithm: The current algorithm tracks play counts and genre tags. The goal is to transition to a more complex machine-learning model to analyze audio features directly for better underrepresented artist matching.
 - Production Database: Migrating from the current SQLite3 setup to a more scalable solution like PostgreSQL for handling larger concurrent user bases.
+- Known bugs involve Debussy (AI) failing to add songs based on theme. 
