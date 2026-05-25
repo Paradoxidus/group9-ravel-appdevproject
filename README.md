@@ -69,10 +69,38 @@ Open your web browser and go to http://127.0.0.1:5000 to start using the app.
 Ravel is webhosted using PythonAnywhere due to its free hosting services compared to other webhosting alternatives.
 
 ### 1. Upload your files
-Create a PythonAnywhere account and log into your Dashboard.
+1. Create a PythonAnywhere account and log into your Dashboard.
 
-Go to the Files tab.
+2. Go to the Files tab.
 
-Upload the entire Ravel project folder into a directory (e.g., `/home/yourusername/mysite`). Ensure `app.py`, `setup_db.py`, and the templates/static folders are all present.
+3. Upload the entire Ravel project folder into a directory (e.g., `/home/yourusername/mysite`). Ensure `app.py`, `setup_db.py`, and the templates/static folders are all present.
 
-Upload your `.env` file containing your `DASHSCOPE_API_KEY` into this same directory.
+4. Upload your `.env` file containing your `DASHSCOPE_API_KEY` into this same directory.
+
+### Step 2: Set Up a Virtual Environment
+1. Go to the Consoles tab and open a new Bash console.
+
+2. Create and activate a virtual environment by running:
+```
+mkvirtualenv --python=/usr/bin/python3.10 ravel-env
+```
+
+3. Install the required dependencies inside the console:
+```
+pip install Flask python-dotenv openai
+```
+
+4. While still in the console, initialize your database:
+```
+cd /home/yourusername/mysite
+python setup_db.py
+```
+### Step 3: Configure the Web App
+1. Navigate to the Web tab and click Add a new web app.
+
+2. Select Manual Configuration (do not select Flask) and choose the Python version that matches your virtual environment (e.g., Python 3.10).
+
+3. Scroll down to the Virtualenv section and enter the path to the environment you just created:
+```
+/home/yourusername/.virtualenvs/ravel-env
+```
