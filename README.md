@@ -10,7 +10,7 @@ Here are the programming files, code, scripts, and how to set up the code.
 | Rexter Gonzales  | Fullstack     | n/a|
 | James Bongcac   | Fullstack    | [@YuanSol30](https://github.com/YuanSol30) |
 
-## Deployment Link (May be closed due to limited tier)
+## Deployment Link (May be closed due to limited-tier selection)
 https://melodymelon23.pythonanywhere.com/login
 
 ## 1. What is Ravel?
