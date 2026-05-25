@@ -13,6 +13,8 @@ Here are the programming files, code, scripts, and how to set up the code.
 ## Deployment Link (May be closed due to limited-tier selection)
 https://melodymelon23.pythonanywhere.com/login
 
+**If you are interested in hosting this your own, then you can refer to Part 4B.**
+
 ## 1. What is Ravel?
 Ravel is a web-based music streaming application similar to Spotify, YouTube Music, Apple Music, etc. Its friendly UI helps users navigate and create their own musical paradise hub with the tap of their fingertips without the unnecessary excruciating ads. All for a reasonable price! Blending AI-integrated systems and artist-focus algorithms, Ravel ensures that everyone has a voice!
 
