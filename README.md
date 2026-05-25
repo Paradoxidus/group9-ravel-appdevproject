@@ -20,7 +20,7 @@ Agentic AI Assistant (Debussy): Ravel features an integrated conversational AI a
 - Frontend: HTML, CSS, JavaScript (Custom UI with interactive player overlays and modals).
 - Backend: Python with the Flask web framework.
 - Database: SQLite3 for managing users, artists, tracks, playlists, and AI chat sessions.
-- AI Integration: OpenAI Python client connected to the DashScope API (Qwen3.5-plus model) for the Debussy assistant.
+- AI Integration: OpenAI Python client connected to the DashScope API (Qwen3.5-plus model) for the Debussy assistant. **Take note**: DashScope API is part of the Alibaba Cloud. You may need to sign up to use their services. You may also use their free trial to get almost a million credits!
 
 ## 4. Local Setup & Installation
 Follow these steps to get Ravel running on your local machine.
@@ -28,7 +28,37 @@ Follow these steps to get Ravel running on your local machine.
 ### a. Prerequisites
 - Python 3.8+ installed on your system.
 - Basic knowledge of running terminal commands.
+
+### b. Step-by-Step Guide
+1. Clone the repository:
 ```
 git clone https://github.com/yourusername/ravel.git
 cd ravel
 ```
+2. Install the required dependencies:
+You will need Flask, python-dotenv, and the OpenAI client.
+
+```
+pip install Flask python-dotenv openai
+```
+3. Set up Environment Variables:
+Create a .env file in the root directory of the project and add your DashScope API key:
+
+```
+DASHSCOPE_API_KEY=your_api_key_here
+```
+4. Initialize the Database:
+Run the database setup script. This will create the ravel_database.db file and populate it with dummy artists and tracks for testing.
+
+```
+python setup_db.py
+```
+5. Run the Application:
+Start the Flask development server.
+
+```
+python app.py
+```
+
+6. Access Ravel:
+Open your web browser and go to http://127.0.0.1:5000 to start using the app.
