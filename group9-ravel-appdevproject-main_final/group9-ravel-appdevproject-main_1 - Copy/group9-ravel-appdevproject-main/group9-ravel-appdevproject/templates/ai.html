@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ravel - AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; }
+        .sidebar { width: 240px; min-width: 240px; height: 100vh; position: fixed; top: 0; left: 0; background: white; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; z-index: 50; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 22px 20px 18px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+        .logo-circle { width: 40px; height: 40px; background: #1a237e; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .sidebar-brand h2 { font-size: 17px; font-weight: 800; color: #111; }
+        .sidebar-brand p  { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 3px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; color: #6b7280; text-decoration: none; transition: background 0.15s, color 0.15s; width: 100%; }
+        .nav-link:hover { background: #f5f5f7; color: #111; }
+        .nav-link.active { background: #111; color: white; }
+        .nav-link svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        /* Layout modifications for AI history */
+        .main-content { margin-left: 240px; flex: 1; height: 100vh; display: flex; flex-direction: column; background: white; overflow: hidden; }
+        .top-bar { background: white; border-bottom: 1px solid #f0f0f0; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;}
+        .top-bar-title { font-size: 20px; font-weight: 800; color: #111; }
+        .top-bar-right { display: flex; gap: 10px; align-items: center; }
+        .icon-btn { background: #f3f4f6; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; position: relative; }
+        .icon-btn:hover { background: #e5e7eb; }
+
+        .ai-wrapper { display: flex; height: calc(100vh - 73px); overflow: hidden; }
+
+        /* Chat History Sidebar */
+        .chat-history-sidebar { width: 260px; background: #f9fafb; border-right: 1px solid #f0f0f0; display: flex; flex-direction: column; flex-shrink: 0; }
+        .chat-history-header { padding: 20px 20px 10px; }
+        .new-chat-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: white; border: 1px solid #d1d5db; border-radius: 12px; font-size: 14px; font-weight: 600; color: #111; cursor: pointer; text-decoration: none; transition: background 0.15s, border-color 0.15s; }
+        .new-chat-btn:hover { background: #f3f4f6; border-color: #9ca3af; }
+        .history-list { padding: 10px 20px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+        .history-item { display: block; padding: 12px 14px; border-radius: 10px; text-decoration: none; transition: background 0.15s; border: 1px solid transparent; }
+        .history-item:hover { background: #f3f4f6; }
+        .history-item.active { background: #eef2ff; border-color: #c7d2fe; }
+        .hist-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 4px; }
+        .history-item.active .hist-title { color: #1d4ed8; }
+        .hist-date { font-size: 12px; color: #6b7280; }
+
+        /* Main Chat Area */
+        .chat-main { flex: 1; display: flex; flex-direction: column; position: relative; background: white; }
+        .ai-intro { padding: 20px 32px 0; flex-shrink: 0; }
+        .ai-intro-bubble { background: linear-gradient(135deg, #d4ecff 0%, #bfdfff 100%); border-radius: 18px; padding: 18px 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 18px; max-width: 700px; }
+        .ai-badge { font-size: 13px; font-weight: 700; color: #1e40af; letter-spacing: 0.3px; }
+        .ai-bubble-question { font-size: 14px; font-weight: 500; color: #1a3a5c; }
+        .mood-section { padding: 0 32px 16px; flex-shrink: 0; }
+        .mood-label { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .mood-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .mood-chip { background: #f3f4f6; border: none; border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: #374151; cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.15s; display: flex; align-items: center; gap: 6px; }
+        .mood-chip:hover { background: #111; color: white; transform: scale(1.03); }
+
+        .chat-area { flex: 1; overflow-y: auto; padding: 16px 32px; display: flex; flex-direction: column; gap: 12px; }
+        .chat-area::-webkit-scrollbar { width: 4px; }
+        .chat-area::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+        .msg { display: flex; align-items: flex-end; gap: 8px; max-width: 75%; }
+        .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+        .msg.bot { align-self: flex-start; }
+        .msg-avatar { width: 28px; height: 28px; border-radius: 50%; background: #1a237e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .msg-bubble { padding: 11px 15px; border-radius: 18px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+        .msg.user .msg-bubble { background: #111; color: white; border-bottom-right-radius: 4px; }
+        .msg.bot .msg-bubble { background: #f3f4f6; color: #111; border-bottom-left-radius: 4px; }
+
+        .typing-indicator { display: none; align-self: flex-start; padding: 12px 16px; background: #f3f4f6; border-radius: 18px; border-bottom-left-radius: 4px; gap: 4px; align-items: center; }
+        .typing-indicator.visible { display: flex; }
+        .typing-dot { width: 7px; height: 7px; background: #9ca3af; border-radius: 50%; animation: bounce 1.2s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+        .generated-card { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; align-self: flex-start; max-width: 65%; width: 100%; }
+        .generated-card-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .track-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
+        .track-item:last-of-type { border-bottom: none; }
+        .track-item-info strong { display: block; color: #111; font-size: 13px; }
+        .track-item-info span { color: #9ca3af; }
+        .save-playlist-btn { margin-top: 12px; width: 100%; background: #111; color: white; border: none; border-radius: 12px; padding: 11px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .save-playlist-btn:hover { background: #333; }
+        .save-playlist-btn:disabled { background: #d1d5db; cursor: default; }
+
+        .input-bar { background: white; border-top: 1px solid #f0f0f0; padding: 12px 32px 16px; display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0; }
+        .chat-input { flex: 1; background: #f3f4f6; border: none; border-radius: 22px; padding: 11px 18px; font-size: 14px; color: #111; outline: none; resize: none; line-height: 1.4; max-height: 100px; }
+        .chat-input::placeholder { color: #9ca3af; }
+        .send-btn { width: 42px; height: 42px; background: #0072f5; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.2s, transform 0.15s; }
+        .send-btn:hover { background: #005ecc; transform: scale(1.05); }
+        .send-btn:disabled { background: #d1d5db; cursor: default; transform: none; }
+
+        /* Notifications */
+        .notif-wrapper { position: relative; }
+        .notif-dropdown { display: none; position: absolute; top: 48px; right: 0; width: 300px; background: white; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.13); border: 1px solid #e5e7eb; z-index: 200; overflow: hidden; }
+        .notif-dropdown.open { display: block; }
+        .notif-header { padding: 14px 18px 10px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .notif-header-title { font-size: 14px; font-weight: 700; color: #111; }
+        .notif-clear-btn { font-size: 12px; color: #9ca3af; cursor: pointer; background: none; border: none; }
+        .notif-clear-btn:hover { color: #111; }
+        .notif-item { padding: 12px 18px; border-bottom: 1px solid #f9fafb; display: flex; gap: 10px; }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #0072f5; flex-shrink: 0; margin-top: 4px; }
+        .notif-dot.read { background: #d1d5db; }
+        .notif-text { font-size: 13px; color: #111; line-height: 1.4; }
+        .notif-time { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .notif-badge { position: absolute; top: 9px; right: 9px; width: 8px; height: 8px; background: #0072f5; border-radius: 50%; border: 2px solid #f3f4f6; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </div>
+        <div class="sidebar-brand"><h2>Ravel</h2><p>AI Music Agent</p></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+        </a>
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
+        </a>
+        <a href="/ai" class="nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none"/><path d="M9 15s1 1.5 3 1.5 3-1.5 3-1.5"/></svg>AI
+        </a>
+        <a href="/library" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Library
+        </a>
+        <a href="/profile" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+        </a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="top-bar">
+        <span class="top-bar-title">AI</span>
+        <div class="top-bar-right">
+            <button class="icon-btn" onclick="window.location.href='/search'" aria-label="Search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <div class="notif-wrapper">
+                <button class="icon-btn" id="notif-btn" onclick="toggleNotif()" aria-label="Notifications">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="notif-badge" id="notif-badge"{% if not notifications %} style="display:none;"{% endif %}></span>
+                </button>
+                <div class="notif-dropdown" id="notif-dropdown">
+                    <div class="notif-header"><span class="notif-header-title">Notifications</span><button class="notif-clear-btn" onclick="clearNotifs()">Clear all</button></div>
+                    {% if notifications %}
+                        {% for n in notifications %}
+                        <div class="notif-item"><div class="notif-dot{% if n.read %} read{% endif %}"></div><div><div class="notif-text">{{ n.text }}</div><div class="notif-time">{{ n.time }}</div></div></div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">No new notifications</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-wrapper">
+        <div class="chat-history-sidebar">
+            <div class="chat-history-header">
+                <a href="/ai?new=true" class="new-chat-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Chat
+                </a>
+            </div>
+            <div class="history-list">
+                {% for session in sessions %}
+                    <a href="/ai?session_id={{ session.id }}" class="history-item {% if session.id == active_session_id %}active{% endif %}">
+                        <div class="hist-title">{{ session.name }}</div>
+                        <div class="hist-date">{{ session.date }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="chat-main">
+            <div class="ai-intro" id="ai-intro" {% if chat_history %}style="display:none;"{% endif %}>
+                <div class="ai-intro-bubble">
+                    <span class="ai-badge">AI</span>
+                    <span class="ai-bubble-question">What's the vibe right now?</span>
+                </div>
+            </div>
+
+            <div class="mood-section" id="mood-section" {% if chat_history %}style="display:none;"{% endif %}>
+                <div class="mood-label">Pick a mood</div>
+                <div class="mood-chips">
+                    <button class="mood-chip" onclick="sendMood('I\'m feeling chill and relaxed')"><span class="chip-emoji">😌</span> Chill</button>
+                    <button class="mood-chip" onclick="sendMood('I need focus music to study or work')"><span class="chip-emoji">🎯</span> Focus</button>
+                    <button class="mood-chip" onclick="sendMood('I want high energy hype music')"><span class="chip-emoji">🔥</span> Hype</button>
+                    <button class="mood-chip" onclick="sendMood('I\'m feeling sad and melancholic')"><span class="chip-emoji">🌧️</span> Sad</button>
+                    <button class="mood-chip" onclick="sendMood('I want to work out, give me energetic music')"><span class="chip-emoji">💪</span> Workout</button>
+                    <button class="mood-chip" onclick="sendMood('It\'s late night, I want moody atmospheric music')"><span class="chip-emoji">🌙</span> Late Night</button>
+                    <button class="mood-chip" onclick="sendMood('I\'m happy and want upbeat feel-good music')"><span class="chip-emoji">✨</span> Happy</button>
+                    <button class="mood-chip" onclick="sendMood('I want to discover new and underrepresented artists')"><span class="chip-emoji">🔍</span> Discover</button>
+                </div>
+            </div>
+
+            <div class="chat-area" id="chat-area">
+                {% if chat_history %}
+                    {% for chat in chat_history %}
+                        <div class="msg {{ chat.role }}">
+                            {% if chat.role == 'bot' %}
+                                <div class="msg-avatar"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+                            {% endif %}
+                            <div class="msg-bubble">{{ chat.message }}</div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="typing-indicator" id="typing">
+                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="input-bar">
+                <textarea class="chat-input" id="chat-input" placeholder="Tell me your mood or what you want..." rows="1"
+                    onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+                <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><line x1="22" y1="2" x2="11" y2="13" stroke="white" stroke-width="2" stroke-linecap="round"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="white"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentTrackIds = [];
+let chatStarted = {% if chat_history %}true{% else %}false{% endif %};
+const activeSessionId = {{ active_session_id }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (chatStarted) {
+        const area = document.getElementById('chat-area');
+        area.scrollTop = area.scrollHeight;
+    }
+});
+
+function logListen(trackId, genre) {
+    if (!trackId) return;
+    fetch('/api/log_listen', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({track_id: trackId, genre: genre || ''})
+    });
+}
+
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+
+function sendMood(mood) { document.getElementById('chat-input').value = mood; sendMessage(); }
+
+function hideMoodUI() {
+    if (!chatStarted) {
+        chatStarted = true;
+        document.getElementById('ai-intro').style.display = 'none';
+        document.getElementById('mood-section').style.display = 'none';
+    }
+}
+
+function appendMessage(text, role) {
+    const area = document.getElementById('chat-area'), typing = document.getElementById('typing');
+    const wrap = document.createElement('div'); wrap.className = 'msg ' + role;
+    if (role === 'bot') {
+        wrap.innerHTML = '<div class="msg-avatar"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div class="msg-bubble">' + escapeHtml(text) + '</div>';
+    } else {
+        wrap.innerHTML = '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
+    }
+    area.insertBefore(wrap, typing); area.scrollTop = area.scrollHeight;
+}
+
+function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setLoading(on) {
+    document.getElementById('typing').classList.toggle('visible', on);
+    document.getElementById('send-btn').disabled = on;
+    document.getElementById('chat-area').scrollTop = document.getElementById('chat-area').scrollHeight;
+}
+
+function sendMessage() {
+    const input = document.getElementById('chat-input'), text = input.value.trim();
+    if (!text) return;
+
+    hideMoodUI();
+    appendMessage(text, 'user');
+    input.value = '';
+    input.style.height = 'auto';
+    setLoading(true);
+
+    fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            message: text,
+            session_id: activeSessionId // Pass the active session!
+        })
+    })
+    .then(r => r.json()).then(data => {
+        setLoading(false); appendMessage(data.reply, 'bot');
+        if (data.trigger_generation) generatePlaylist();
+    }).catch(() => { setLoading(false); appendMessage('Something went wrong. Please try again.', 'bot'); });
+}
+
+function generatePlaylist() {
+    setLoading(true);
+    fetch('/api/generate_playlist').then(r => r.json()).then(data => {
+        setLoading(false); currentTrackIds = data.tracks.map(t => t.id);
+        const area = document.getElementById('chat-area'), typing = document.getElementById('typing');
+        const card = document.createElement('div'); card.className = 'generated-card';
+        let tracksHtml = data.tracks.map(t =>
+            '<div class="track-item" onclick="logListen(' + Number(t.id) + ', \'' + escapeHtml(t.genre || '').replace(/'/g, "&#39;") + '\')" style="cursor:pointer;">' +
+            '<div class="track-item-info"><strong>' + escapeHtml(t.title) + '</strong><span>' + escapeHtml(t.artist) + '</span></div></div>'
+        ).join('');
+        if (data.tracks.length === 0) tracksHtml = '<p style="color:#9ca3af;font-size:13px;padding:8px 0;">No tracks found.</p>';
+        card.innerHTML = '<div class="generated-card-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0072f5" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Ravel Discovery Playlist</div>' + tracksHtml + '<button class="save-playlist-btn" id="save-btn" onclick="savePlaylist()">Save to My Library</button>';
+        area.insertBefore(card, typing); area.scrollTop = area.scrollHeight;
+    }).catch(() => { setLoading(false); appendMessage('Could not generate playlist. Try again.', 'bot'); });
+}
+
+function savePlaylist() {
+    const btn = document.getElementById('save-btn'); if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+    fetch('/api/save_playlist', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({track_ids: currentTrackIds}) })
+    .then(r => r.json()).then(data => { if (data.success) { if (btn) btn.textContent = 'Saved! ✓'; appendMessage('Your playlist has been saved to your Library!', 'bot'); } });
+}
+
+// Notifications
+function toggleNotif() { const dd = document.getElementById('notif-dropdown'); dd.classList.toggle('open'); document.getElementById('notif-badge').style.display = 'none'; }
+function clearNotifs() {
+    fetch('/api/notifications/clear', {method: 'POST'})
+        .then(function() {
+            document.getElementById('notif-dropdown').innerHTML = '<div class="notif-header"><span class="notif-header-title">Notifications</span><button class="notif-clear-btn" onclick="clearNotifs()">Clear all</button></div><div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">No new notifications</div>';
+            document.getElementById('notif-badge').style.display = 'none';
+        })
+        .catch(function() {});
+}
+document.addEventListener('click', function(e) {
+    const btn = document.getElementById('notif-btn'), dd = document.getElementById('notif-dropdown');
+    if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('open');
+});
+</script>
+</body>
+</html>

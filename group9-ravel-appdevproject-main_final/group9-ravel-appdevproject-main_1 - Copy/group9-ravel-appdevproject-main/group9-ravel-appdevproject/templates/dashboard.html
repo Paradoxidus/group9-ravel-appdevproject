@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ravel - Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+        }
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 240px; min-width: 240px;
+            height: 100vh; position: fixed; top: 0; left: 0;
+            background: white; border-right: 1px solid #e5e7eb;
+            display: flex; flex-direction: column; z-index: 50;
+        }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 12px;
+            padding: 22px 20px 18px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
+        }
+        .logo-circle {
+            width: 40px; height: 40px; background: #1a237e; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .sidebar-brand h2 { font-size: 17px; font-weight: 800; color: #111; }
+        .sidebar-brand p  { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 3px; }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 14px; border-radius: 10px;
+            border: none; background: none; cursor: pointer;
+            font-size: 14px; font-weight: 500; color: #6b7280;
+            text-decoration: none; transition: background 0.15s, color 0.15s; width: 100%;
+        }
+        .nav-link:hover { background: #f5f5f7; color: #111; }
+        .nav-link.active { background: #111; color: white; }
+        .nav-link svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        /* ── MAIN ── */
+        .main-content { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; background: white; }
+        .top-bar {
+            background: white; border-bottom: 1px solid #f0f0f0;
+            padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 40;
+        }
+        .top-bar-title { font-size: 20px; font-weight: 800; color: #111; }
+        .top-bar-right { display: flex; gap: 10px; align-items: center; }
+        .icon-btn {
+            background: #f3f4f6; border: none; border-radius: 50%;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background 0.15s; position: relative;
+        }
+        .icon-btn:hover { background: #e5e7eb; }
+        .content-area { padding: 32px; flex: 1; }
+
+        /* ── NOTIFICATIONS ── */
+        .notif-wrapper { position: relative; }
+        .notif-dropdown {
+            display: none; position: absolute; top: 48px; right: 0;
+            width: 300px; background: white; border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.13); border: 1px solid #e5e7eb; z-index: 200; overflow: hidden;
+        }
+        .notif-dropdown.open { display: block; }
+        .notif-header { padding: 14px 18px 10px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .notif-header-title { font-size: 14px; font-weight: 700; color: #111; }
+        .notif-clear-btn { font-size: 12px; color: #9ca3af; cursor: pointer; background: none; border: none; }
+        .notif-clear-btn:hover { color: #111; }
+        .notif-item { padding: 12px 18px; border-bottom: 1px solid #f9fafb; display: flex; gap: 10px; }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #0072f5; flex-shrink: 0; margin-top: 4px; }
+        .notif-dot.read { background: #d1d5db; }
+        .notif-text { font-size: 13px; color: #111; line-height: 1.4; }
+        .notif-time { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .notif-badge {
+            position: absolute; top: 9px; right: 9px;
+            width: 8px; height: 8px; background: #0072f5;
+            border-radius: 50%; border: 2px solid #f3f4f6;
+        }
+
+        /* ── MODALS (Player & Library) ── */
+        .player-overlay, .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .player-overlay.open, .modal-overlay.open { display: flex; }
+        .player-card { width: 360px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.45); }
+        .player-card-header {
+            background: #1a1a1a; padding: 16px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .player-card-header span { font-size: 11px; font-weight: 700; color: #9ca3af; letter-spacing: 1.5px; text-transform: uppercase; }
+        .player-close-btn {
+            background: none; border: none; cursor: pointer; color: #9ca3af;
+            padding: 4px; border-radius: 50%; transition: color 0.15s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .player-close-btn:hover { color: white; }
+        .player-card-body {
+            background: #111; padding: 28px 32px 36px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .player-art {
+            width: 220px; height: 220px; border-radius: 18px; overflow: hidden;
+            margin-bottom: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .player-song-title { font-size: 22px; font-weight: 800; color: white; margin-bottom: 6px; text-align: center; }
+        .player-song-artist { font-size: 14px; color: #9ca3af; margin-bottom: 28px; text-align: center; }
+        .player-progress { width: 100%; margin-bottom: 28px; }
+        .progress-track {
+            position: relative; width: 100%; height: 4px;
+            background: #333; border-radius: 2px; cursor: pointer; margin-bottom: 8px;
+        }
+        .progress-fill { height: 100%; background: #9ca3af; border-radius: 2px; width: 0%; transition: width 0.1s linear; }
+        .progress-thumb {
+            position: absolute; top: 50%; transform: translate(-50%, -50%);
+            left: 0%; width: 14px; height: 14px; background: white; border-radius: 50%;
+            transition: left 0.1s linear;
+        }
+        .progress-times { display: flex; justify-content: space-between; }
+        .progress-times span { font-size: 11px; color: #6b7280; }
+        .player-controls { display: flex; align-items: center; gap: 18px; }
+        .ctrl-btn {
+            width: 52px; height: 52px; background: #2a2a2a;
+            border: none; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: white; transition: background 0.15s, transform 0.1s;
+        }
+        .ctrl-btn:hover { background: #3a3a3a; transform: scale(1.05); }
+        .ctrl-btn.play-pause { width: 64px; height: 64px; background: #3a3a3a; }
+        .ctrl-btn.play-pause:hover { background: #4a4a4a; }
+        .player-add-lib-row { margin-top: 18px; display: flex; justify-content: center; width: 100%; }
+        .player-add-lib-btn { background: #2a2a2a; border: none; border-radius: 20px; padding: 9px 22px; color: #d1d5db; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.15s, color 0.15s; }
+        .player-add-lib-btn:hover { background: #3a3a3a; color: white; }
+
+        /* Library Picker Modal */
+        .modal-overlay { z-index: 3000; }
+        .modal-box { background: white; border-radius: 18px; padding: 28px 32px; width: 400px; max-width: calc(100vw - 40px); box-shadow: 0 16px 50px rgba(0,0,0,0.25); }
+        .modal-title { font-size: 18px; font-weight: 800; color: #111; margin-bottom: 18px; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+        .modal-btn { border: none; border-radius: 10px; padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+        .modal-btn.cancel { background: #f3f4f6; color: #374151; }
+        .modal-btn.cancel:hover { background: #e5e7eb; }
+        .lib-picker-list { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; max-height: 250px; overflow-y: auto; }
+        .lib-picker-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e5e7eb; cursor: pointer; font-size: 14px; font-weight: 500; color: #111; background: none; text-align: left; transition: background 0.12s, border-color 0.12s; width: 100%; }
+        .lib-picker-item:hover { background: #f5f7ff; border-color: #c7d2fe; }
+        .lib-picker-item.added { border-color: #16a34a; color: #16a34a; }
+
+        /* ── CONTENT STYLES ── */
+        .ai-vibe-bubble {
+            background: linear-gradient(135deg, #d4ecff 0%, #bfdfff 100%);
+            border-radius: 18px; padding: 22px 28px; margin-bottom: 36px;
+            display: flex; align-items: center; justify-content: space-between; max-width: 620px;
+            cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .ai-vibe-bubble:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,114,245,0.16); }
+        .ai-vibe-inner { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .ai-label { font-size: 13px; font-weight: 700; color: #1e40af; letter-spacing: 0.3px; }
+        .vibe-question { font-size: 15px; font-weight: 500; color: #1a3a5c; }
+        .vibe-play-btn {
+            width: 46px; height: 46px; background: #0072f5;
+            border: none; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; transition: background 0.2s;
+        }
+        .vibe-play-btn:hover { background: #005ecc; }
+
+        .section { margin-bottom: 40px; }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 18px; }
+        .section-title { font-size: 18px; font-weight: 700; color: #111; }
+        .section-subtitle { font-size: 12px; color: #9ca3af; margin-top: 3px; }
+        .see-all { font-size: 13px; color: #6b7280; text-decoration: none; transition: color 0.2s; }
+        .see-all:hover { color: #111; }
+
+        /* Track List UI */
+        .recent-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .recent-item { display: flex; align-items: center; gap: 14px; padding: 12px 10px; border-radius: 14px; cursor: pointer; transition: background 0.15s; }
+        .recent-item:hover { background: #f8f9fa; }
+        .recent-name { font-size: 14px; font-weight: 700; color: #111; }
+        .recent-desc { font-size: 12px; color: #6b7280; margin-top: 3px; display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
+        .genre-badge { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; color: #374151; vertical-align: middle; background: #f3f4f6; }
+
+        .genre-badge[data-genre="Pop"] { background: #dbeafe; }
+        .genre-badge[data-genre="Hip-Hop"] { background: #f3e8ff; }
+        .genre-badge[data-genre="R&B"] { background: #fce7f3; }
+        .genre-badge[data-genre="Indie Rock"] { background: #d1fae5; }
+        .genre-badge[data-genre="Alternative"] { background: #e0f2fe; }
+        .genre-badge[data-genre="Electronic"] { background: #fef3c7; }
+        .genre-badge[data-genre="Synthwave"] { background: #ede9fe; }
+        .genre-badge[data-genre="Folk"] { background: #ecfdf5; }
+        .genre-badge[data-genre="Acoustic"] { background: #fefce8; }
+        .genre-badge[data-genre="Metal"] { background: #fee2e2; }
+        .genre-badge[data-genre="Jazz"] { background: #fef9c3; }
+        .genre-badge[data-genre="Classical"] { background: #f0fdf4; }
+        .genre-badge[data-genre="Lo-Fi"] { background: #e0f2fe; }
+        .genre-badge[data-genre="OPM"] { background: #ffe4e6; }
+        .genre-badge[data-genre="Soul"] { background: #fff7ed; }
+        .genre-badge[data-genre="Reggae"] { background: #d1fae5; }
+        .genre-badge[data-genre="Latin"] { background: #fed7aa; }
+        .genre-badge[data-genre="Funk"] { background: #fce7f3; }
+        .genre-badge[data-genre="Ambient"] { background: #e0f7fa; }
+        .genre-badge[data-genre="Country"] { background: #fef3c7; }
+        .genre-badge[data-genre="Rock"] { background: #fee2e2; }
+
+        .row-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+        .row-btn { border: none; border-radius: 999px; cursor: pointer; transition: background 0.15s, color 0.15s, transform 0.12s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .row-btn:hover { transform: translateY(-1px); }
+        .row-btn.play { width: 34px; height: 34px; background: #111; color: white; }
+        .row-btn.play:hover { background: #2a2a2a; }
+        .row-btn.add { height: 34px; padding: 0 12px; background: #eef2ff; color: #1d4ed8; font-size: 12px; font-weight: 700; }
+        .row-btn.add:hover { background: #dbeafe; }
+
+        .playlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 20px; }
+        .playlist-card { cursor: pointer; transition: transform 0.2s; }
+        .playlist-card:hover { transform: translateY(-3px); }
+        .playlist-card-image { width: 100%; aspect-ratio: 1/1; border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
+        .playlist-card-title { font-weight: 700; font-size: 14px; color: #111; }
+        .playlist-card-artist { font-size: 12px; color: #9ca3af; margin-top: 3px; }
+
+        .save-btn { background: #0080ff; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 16px; transition: background 0.3s; }
+        .save-btn:hover { background: #0066cc; }
+        #active-generation { display: none; border: 1px solid #e5e7eb; background: white; padding: 22px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+
+        .empty-state { padding: 14px 10px; color: #9ca3af; font-size: 14px; }
+
+        /* Debussy Chat Bubbles */
+        .chat-bubble-user { text-align: right; margin-bottom: 10px; }
+        .chat-bubble-user span { background: #111; color: white; padding: 10px 14px; border-radius: 16px; border-bottom-right-radius: 4px; display: inline-block; font-size: 14px; }
+        .chat-bubble-ai { text-align: left; margin-bottom: 10px; }
+        .chat-bubble-ai span { background: #d4ecff; color: #1a3a5c; padding: 10px 14px; border-radius: 16px; border-bottom-left-radius: 4px; display: inline-block; font-size: 14px; }
+
+        /* Musician Stat Cards */
+        .stat-card {
+            padding: 24px; border-radius: 16px; color: white;
+            display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+        </div>
+        <div class="sidebar-brand"><h2>Ravel</h2><p>AI Music Agent</p></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home
+        </a>
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Search
+        </a>
+        <a href="/ai" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none"/><path d="M9 15s1 1.5 3 1.5 3-1.5 3-1.5"/></svg>
+            AI
+        </a>
+        <a href="/library" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Library
+        </a>
+        <a href="/profile" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+        </a>
+        {% if session.get('user_type') == 'Musician' %}
+        <a href="/upload" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            Upload
+        </a>
+        {% endif %}
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="top-bar">
+        <span class="top-bar-title">Home</span>
+        <div class="top-bar-right">
+            <button class="icon-btn" onclick="window.location.href='/search'" aria-label="Search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <div class="notif-wrapper">
+                <button class="icon-btn" id="notif-btn" onclick="toggleNotif()" aria-label="Notifications">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="notif-badge" id="notif-badge"{% if not notifications %} style="display:none;"{% endif %}></span>
+                </button>
+                <div class="notif-dropdown" id="notif-dropdown">
+                    <div class="notif-header">
+                        <span class="notif-header-title">Notifications</span>
+                        <button class="notif-clear-btn" onclick="clearNotifs()">Clear all</button>
+                    </div>
+                    {% if notifications %}
+                        {% for n in notifications %}
+                        <div class="notif-item">
+                            <div class="notif-dot{% if n.read %} read{% endif %}"></div>
+                            <div><div class="notif-text">{{ n.text }}</div><div class="notif-time">{{ n.time }}</div></div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">No new notifications</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-area">
+
+        {% if user_type == 'Musician' and musician_data %}
+        <div class="section">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Musician Dashboard</div>
+                    <div class="section-subtitle">Your performance on Ravel</div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:24px;">
+                <div class="stat-card" style="background:linear-gradient(135deg, #1e3a8a 0%, #2e5c9a 100%);">
+                    <div style="font-size:14px; opacity:0.8; margin-bottom:8px;">Total Unique Listeners</div>
+                    <div style="font-size:36px; font-weight:800;">{{ musician_data.listeners }}</div>
+                </div>
+                <div class="stat-card" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                    <div style="font-size:14px; opacity:0.8; margin-bottom:8px;">Total Track Streams</div>
+                    <div style="font-size:36px; font-weight:800;">{{ musician_data.streams }}</div>
+                </div>
+            </div>
+
+            <h4 style="font-size:15px; margin-bottom:12px; color:#111;">Your Top Songs</h4>
+            <ul class="recent-list">
+                {% for track in musician_data.top_tracks %}
+                <li class="recent-item" style="cursor:default;">
+                    <div style="font-weight:700; width:24px; text-align:center; color:#9ca3af; font-size:14px;">{{ loop.index }}</div>
+                    <div style="flex:1;">
+                        <div class="recent-name">{{ track.title }}</div>
+                    </div>
+                    <div style="font-size:13px; color:#6b7280; font-weight:600;">{{ track.plays }} streams</div>
+                </li>
+                {% else %}
+                <li class="empty-state">No track stats yet. Head to your <a href="/upload" style="color:#0072f5; font-weight:600;">Upload</a> page to add your music!</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <hr style="border:none; border-top:1px solid #e5e7eb; margin: 36px 0;">
+        {% endif %}
+        <div class="ai-vibe-bubble" role="button" tabindex="0" onclick="goToAIPage()" onkeydown="if(event.key==='Enter' || event.key===' '){event.preventDefault();goToAIPage();}">
+            <div class="ai-vibe-inner">
+                <span class="ai-label">AI</span>
+                <p class="vibe-question">What's the vibe right now?</p>
+            </div>
+            <button class="vibe-play-btn" type="button" onclick="event.stopPropagation();goToAIPage()" aria-label="Open AI tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </button>
+        </div>
+
+        <div id="vibe-input-area" style="display:none; margin-bottom:24px; max-width:620px;">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="quick-input" placeholder="Tell me what you're in the mood for..."
+                    style="flex:1; padding:12px 18px; border-radius:24px; border:1px solid #d1d5db; font-size:14px; outline:none;"
+                    onkeydown="if(event.key==='Enter') sendQuickMessage()"/>
+                <button onclick="sendQuickMessage()" style="padding:10px 22px; background:#0080ff; color:white; border:none; border-radius:24px; cursor:pointer; font-weight:600; font-size:14px;">Send</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">AI Suggestions</div>
+                    <div class="section-subtitle">{% if top_genres %}Based on your top genres: {{ top_genres | join(', ') }}{% else %}Discover new music{% endif %}</div>
+                </div>
+                <a href="/library" class="see-all">See all &rsaquo;</a>
+            </div>
+
+            <ul class="recent-list" id="ai-suggestions">
+                {% if recommendations %}
+                    {% for rec in recommendations[:3] %}
+                    <li class="recent-item" onclick="playRecommendation({{ loop.index0 }}, 'suggestions')">
+                        <div style="background:linear-gradient(160deg, {% if loop.index == 1 %}#0d0019 0%,#2d0050 50%,#6b21a8 100%{% elif loop.index == 2 %}#0c1a2e 0%,#1e3a5f 50%,#4a8fc1 100%{% else %}#1a1810 0%,#2e2416 50%,#3a2e1c 100%{% endif %});width:48px;height:48px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="recent-name">{{ rec.title }}</div>
+                            <div class="recent-desc">
+                                {{ rec.artist }}
+                                {% if rec.genre %}
+                                <span class="genre-badge" data-genre="{{ rec.genre }}">{{ rec.genre }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row-actions">
+                            <button class="row-btn play" onclick="event.stopPropagation(); playRecommendation({{ loop.index0 }}, 'suggestions')" aria-label="Play">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            </button>
+                            <button class="row-btn add" onclick="event.stopPropagation(); addRecommendationToLibrary({{ loop.index0 }}, 'suggestions')">+ Library</button>
+                        </div>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="empty-state">Listen to some tracks and the AI will personalise this section for you!</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div id="active-generation">
+            <h3 style="margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0072f5" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Agentic Discovery Playlist
+            </h3>
+            <p style="color:#6b7280; font-size:13px; margin-bottom:16px;">Curated based on your intent, prioritizing underrepresented artists.</p>
+            <ul id="generated-tracks" class="recent-list"></ul>
+            <button class="save-btn" onclick="savePlaylist()">Save to My Library</button>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Based on your taste</div>
+                    <div class="section-subtitle">Spotlight on new &amp; underrepresented artists</div>
+                </div>
+                <a href="/library" class="see-all">See all &rsaquo;</a>
+            </div>
+
+            <ul class="recent-list" id="based-on-taste">
+                {% if recommendations %}
+                    {% for rec in recommendations %}
+                    <li class="recent-item" onclick="playRecommendation({{ loop.index0 }}, 'taste')">
+                        <div style="background:linear-gradient(160deg, {% if loop.index % 4 == 1 %}#0d0d0d 0%,#1c1c1c 50%,#2a2219 100%{% elif loop.index % 4 == 2 %}#111111 0%,#201a1a 50%,#2e2020 100%{% elif loop.index % 4 == 3 %}#0f0f0f 0%,#1f1a20 50%,#2c1e2e 100%{% else %}#0a1628 0%,#0e2240 50%,#1a3a5c 100%{% endif %});width:48px;height:48px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="recent-name">{{ rec.title }}</div>
+                            <div class="recent-desc">
+                                {{ rec.artist }}
+                                {% if rec.genre %}
+                                <span class="genre-badge" data-genre="{{ rec.genre }}">{{ rec.genre }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row-actions">
+                            <button class="row-btn play" onclick="event.stopPropagation(); playRecommendation({{ loop.index0 }}, 'taste')" aria-label="Play">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            </button>
+                            <button class="row-btn add" onclick="event.stopPropagation(); addRecommendationToLibrary({{ loop.index0 }}, 'taste')">+ Library</button>
+                        </div>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="empty-state">No recommendations yet. Start listening to build your taste profile!</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        {% if playlists %}
+        <div class="section">
+            <div class="section-header">
+                <div><div class="section-title">Your Library</div><div class="section-subtitle">Your saved playlists</div></div>
+                <a href="/library" class="see-all">See all &rsaquo;</a>
+            </div>
+            <div class="playlist-grid">
+                {% for playlist in playlists %}
+                <div class="playlist-card" onclick="window.location.href='/library{% if playlist.title == 'Liked Songs' %}#songs{% else %}#playlist-detail-{{ playlist.id }}{% endif %}'">
+                    <div class="playlist-card-image" style="background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);"></div>
+                    <div class="playlist-card-title">{{ playlist.title }}</div>
+                    <div class="playlist-card-artist">{{ playlist.tracks|length }} tracks</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="player-overlay" id="player-overlay" onclick="overlayClick(event)">
+    <div class="player-card" id="player-card">
+        <div class="player-card-header">
+            <span>Now Playing</span>
+            <button class="player-close-btn" onclick="closePlayer()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="player-card-body">
+            <div class="player-art" id="player-art">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <div class="player-song-title" id="player-title"></div>
+            <div class="player-song-artist" id="player-artist"></div>
+            <div class="player-progress">
+                <div class="progress-track" id="progress-track" onclick="scrubProgress(event)">
+                    <div class="progress-fill" id="progress-fill"></div>
+                    <div class="progress-thumb" id="progress-thumb"></div>
+                </div>
+                <div class="progress-times"><span id="time-elapsed">0:00</span><span id="time-total">0:00</span></div>
+            </div>
+            <div class="player-controls">
+                <button class="ctrl-btn" onclick="prevTrack()" aria-label="Previous">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+                </button>
+                <button class="ctrl-btn play-pause" id="play-pause-btn" onclick="togglePlay()" aria-label="Play/Pause">
+                    <svg id="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <svg id="pause-icon" width="24" height="24" viewBox="0 0 24 24" fill="white" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                </button>
+                <button class="ctrl-btn" onclick="nextTrack()" aria-label="Next">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                </button>
+            </div>
+
+            <div class="player-add-lib-row">
+                <button class="player-add-lib-btn" onclick="openLibraryPicker()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add to Library
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="lib-picker-modal" onclick="if(event.target===this)closeLibraryPicker()">
+    <div class="modal-box">
+        <div class="modal-title">Add to Library</div>
+        <div class="lib-picker-list" id="lib-picker-list"></div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel" onclick="closeLibraryPicker()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="debussy-welcome-modal" class="modal-overlay" style="display: {% if is_new_user %}flex{% else %}none{% endif %}; z-index: 4000;">
+    <div class="modal-box" style="width: 520px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2e5c9a 100%); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </div>
+        <h2 style="text-align: center; margin-bottom: 12px; font-weight: 800; color: #111;">Meet Debussy</h2>
+        <p style="color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.5; text-align: center;">
+            Welcome to Ravel! I am Debussy, your personal AI music agent. To get started, tell me what mood you are in right now. I can create custom playlists for you and help you discover amazing underrepresented musicians.
+        </p>
+
+        <div id="debussy-chat-area" style="text-align: left; background: #fbfcfe; border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px; margin-bottom: 20px; max-height: 240px; overflow-y: auto; display: none;">
+            </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="debussy-input" placeholder="E.g., I'm feeling chill..." style="flex: 1; padding: 14px 18px; border: 1px solid #d1d5db; border-radius: 24px; outline: none; font-size: 14px;" onkeydown="if(event.key==='Enter') sendDebussyMessage()">
+            <button onclick="sendDebussyMessage()" style="background: #0072f5; color: white; border: none; border-radius: 24px; padding: 0 24px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Send</button>
+        </div>
+
+        <button onclick="closeDebussyModal()" style="background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 13px; margin: 0 auto; display: block; transition: color 0.2s;">Skip for now</button>
+    </div>
+</div>
+
+<script>
+const recommendationQueue = {{ recommendations | tojson }};
+const dashboardPlaylists = {{ player_playlists | tojson }};
+const recommendationPalettes = {
+    suggestions: [
+        'linear-gradient(160deg,#0d0019 0%,#2d0050 50%,#6b21a8 100%)',
+        'linear-gradient(160deg,#0c1a2e 0%,#1e3a5f 50%,#4a8fc1 100%)',
+        'linear-gradient(160deg,#1a1810 0%,#2e2416 50%,#3a2e1c 100%)'
+    ],
+    taste: [
+        'linear-gradient(160deg,#0d0d0d 0%,#1c1c1c 50%,#2a2219 100%)',
+        'linear-gradient(160deg,#111111 0%,#201a1a 50%,#2e2020 100%)',
+        'linear-gradient(160deg,#0f0f0f 0%,#1f1a20 50%,#2c1e2e 100%)',
+        'linear-gradient(160deg,#0a1628 0%,#0e2240 50%,#1a3a5c 100%)'
+    ],
+    library: ['linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)'],
+    generated: ['linear-gradient(160deg,#0b1f36 0%,#114a75 50%,#0ea5e9 100%)']
+};
+
+function escapeHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── Notifications ──
+function toggleNotif() {
+    const dd = document.getElementById('notif-dropdown');
+    dd.classList.toggle('open');
+    document.getElementById('notif-badge').style.display = 'none';
+}
+function clearNotifs() {
+    fetch('/api/notifications/clear', {method: 'POST'})
+        .then(() => {
+            const dd = document.getElementById('notif-dropdown');
+            dd.innerHTML = '<div class="notif-header"><span class="notif-header-title">Notifications</span><button class="notif-clear-btn" onclick="clearNotifs()">Clear all</button></div><div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">No new notifications</div>';
+            document.getElementById('notif-badge').style.display = 'none';
+        })
+        .catch(() => {});
+}
+document.addEventListener('click', function(e) {
+    const btn = document.getElementById('notif-btn');
+    const dd  = document.getElementById('notif-dropdown');
+    if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+        dd.classList.remove('open');
+    }
+});
+
+// ── Player & Modals ──
+let isPlaying = false, progressPct = 0, progressTimer = null;
+let totalSecs = 180;
+let playbackQueue = [];
+let playbackIndex = -1;
+let playbackHistory = [];
+let playbackFuture = [];
+let currentTrack = null;
+let pendingLibraryTrack = null;
+let generatedQueue = [];
+
+function formatTime(seconds) {
+    return Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
+}
+
+function cloneTrack(track) {
+    return track ? Object.assign({}, track) : null;
+}
+
+function cloneQueue(queue) {
+    return (queue || []).map(cloneTrack);
+}
+
+function normalizeTrack(track, fallback) {
+    const base = fallback || {};
+    return {
+        id: track && track.id ? Number(track.id) : (base.id || null),
+        title: track && track.title ? track.title : (base.title || ''),
+        artist: track && track.artist ? track.artist : (base.artist || ''),
+        genre: track && track.genre ? track.genre : (base.genre || ''),
+        bg: track && track.bg ? track.bg : (base.bg || recommendationPalettes.library[0]),
+        durationSecs: track && track.durationSecs ? Number(track.durationSecs) : (base.durationSecs || 180)
+    };
+}
+
+function openPlayer(track) {
+    totalSecs = track.durationSecs || 180;
+    document.getElementById('player-title').textContent = track.title || '';
+    document.getElementById('player-artist').textContent = track.artist || '';
+    document.getElementById('player-art').style.background = track.bg || recommendationPalettes.library[0];
+    progressPct = 0;
+    stopProgress(); isPlaying = false; showPlayIcon();
+    updateProgressUI();
+    document.getElementById('time-total').textContent = formatTime(totalSecs);
+    document.getElementById('player-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function playTrack(track, queue, index, options) {
+    const nextTrack = normalizeTrack(track);
+    const nextQueue = cloneQueue(queue && queue.length ? queue : [nextTrack]);
+    const nextIndex = typeof index === 'number' ? index : 0;
+    const opts = options || {};
+
+    if (!opts.skipHistory && currentTrack) {
+        playbackHistory.push({
+            track: cloneTrack(currentTrack),
+            queue: cloneQueue(playbackQueue),
+            index: playbackIndex
+        });
+    }
+    if (!opts.keepFuture) {
+        playbackFuture = [];
+    }
+
+    playbackQueue = nextQueue;
+    playbackIndex = nextIndex;
+    currentTrack = cloneTrack(nextQueue[nextIndex] || nextTrack);
+    pendingLibraryTrack = cloneTrack(currentTrack);
+
+    openPlayer(currentTrack);
+
+    if (opts.log !== false && currentTrack.id) {
+        fetch('/api/log_listen', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({track_id: currentTrack.id, genre: currentTrack.genre || ''})
+        });
+    }
+}
+
+function closePlayer() {
+    document.getElementById('player-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    stopProgress(); isPlaying = false; showPlayIcon();
+}
+function overlayClick(e) { if (e.target === document.getElementById('player-overlay')) closePlayer(); }
+
+function togglePlay() {
+    isPlaying = !isPlaying;
+    if (isPlaying) { showPauseIcon(); startProgress(); }
+    else { showPlayIcon(); stopProgress(); }
+}
+function showPlayIcon()  { document.getElementById('play-icon').style.display = ''; document.getElementById('pause-icon').style.display = 'none'; }
+function showPauseIcon() { document.getElementById('play-icon').style.display = 'none'; document.getElementById('pause-icon').style.display = ''; }
+
+function startProgress() {
+    if (progressTimer) clearInterval(progressTimer);
+    progressTimer = setInterval(function() {
+        progressPct = Math.min(progressPct + (100 / (totalSecs * 10)), 100);
+        updateProgressUI();
+        if (progressPct >= 100) { stopProgress(); isPlaying = false; showPlayIcon(); progressPct = 0; }
+    }, 100);
+}
+function stopProgress() { if (progressTimer) { clearInterval(progressTimer); progressTimer = null; } }
+
+function updateProgressUI() {
+    document.getElementById('progress-fill').style.width  = progressPct + '%';
+    document.getElementById('progress-thumb').style.left  = progressPct + '%';
+    var cur = Math.floor(totalSecs * progressPct / 100);
+    document.getElementById('time-elapsed').textContent = Math.floor(cur/60) + ':' + String(cur%60).padStart(2,'0');
+}
+function scrubProgress(e) {
+    var rect = document.getElementById('progress-track').getBoundingClientRect();
+    progressPct = Math.max(0, Math.min(100, (e.clientX - rect.left) / rect.width * 100));
+    updateProgressUI();
+}
+function prevTrack() {
+    if (!playbackHistory.length) {
+        progressPct = 0;
+        updateProgressUI();
+        return;
+    }
+    if (currentTrack) {
+        playbackFuture.push({
+            track: cloneTrack(currentTrack),
+            queue: cloneQueue(playbackQueue),
+            index: playbackIndex
+        });
+    }
+    var previousState = playbackHistory.pop();
+    playTrack(previousState.track, previousState.queue, previousState.index, {
+        skipHistory: true,
+        keepFuture: true
+    });
+}
+function nextTrack() {
+    if (playbackFuture.length) {
+        var futureState = playbackFuture.pop();
+        playTrack(futureState.track, futureState.queue, futureState.index, {
+            skipHistory: false,
+            keepFuture: true
+        });
+        return;
+    }
+    if (!playbackQueue.length || playbackIndex >= playbackQueue.length - 1) {
+        progressPct = 0;
+        updateProgressUI();
+        return;
+    }
+    playTrack(playbackQueue[playbackIndex + 1], playbackQueue, playbackIndex + 1);
+}
+
+function buildPaletteQueue(tracks, paletteName) {
+    var palette = recommendationPalettes[paletteName] || recommendationPalettes.library;
+    return (tracks || []).map(function(track, index) {
+        return normalizeTrack(track, {bg: palette[index % palette.length]});
+    });
+}
+
+function playRecommendation(index, paletteName) {
+    var queue = buildPaletteQueue(recommendationQueue, paletteName);
+    if (!queue[index]) return;
+    playTrack(queue[index], queue, index);
+}
+
+function playDashboardPlaylist(playlistId) {
+    var playlist = dashboardPlaylists.find(function(item) {
+        return Number(item.id) === Number(playlistId);
+    });
+    if (!playlist || !playlist.tracks || !playlist.tracks.length) {
+        return;
+    }
+    var queue = buildPaletteQueue(playlist.tracks, 'library');
+    playTrack(queue[0], queue, 0);
+}
+
+// ── Library Picker Logic ──
+function openLibraryPicker(track) {
+    pendingLibraryTrack = track || currentTrack;
+    if (!pendingLibraryTrack || !pendingLibraryTrack.id) return;
+
+    var list = document.getElementById('lib-picker-list');
+    list.innerHTML = '<div style="padding:12px;color:#9ca3af;font-size:13px;">Loading...</div>';
+    document.getElementById('lib-picker-modal').classList.add('open');
+
+    fetch('/api/library/list')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            list.innerHTML = '';
+            if (!data.playlists || !data.playlists.length) {
+                list.innerHTML = '<div style="padding:12px;color:#9ca3af;font-size:13px;">No libraries yet. Create one first.</div>';
+                return;
+            }
+            data.playlists.forEach(function(p) {
+                var btn = document.createElement('button');
+                btn.className = 'lib-picker-item';
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ' + escapeHtml(p.name);
+                btn.onclick = function() { addCurrentSongToLibrary(p.id, p.name, btn); };
+                list.appendChild(btn);
+            });
+        });
+}
+
+function closeLibraryPicker() {
+    document.getElementById('lib-picker-modal').classList.remove('open');
+}
+
+function addCurrentSongToLibrary(playlistId, playlistName, btn) {
+    if (!pendingLibraryTrack || !pendingLibraryTrack.id) { return; }
+    fetch('/api/library/add_track', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({playlist_id: Number(playlistId), track_id: Number(pendingLibraryTrack.id)})
+    }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) {
+            btn.classList.add('added');
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Added to ' + escapeHtml(playlistName);
+        }
+    });
+}
+
+function addRecommendationToLibrary(index, paletteName) {
+    var queue = buildPaletteQueue(recommendationQueue, paletteName);
+    if (!queue[index]) return;
+    openLibraryPicker(queue[index]);
+}
+
+function addGeneratedTrackToLibrary(index) {
+    if (!generatedQueue[index]) return;
+    openLibraryPicker(generatedQueue[index]);
+}
+
+// ── AI Vibe Input & Generation ──
+let currentTrackIds = [];
+let debussySessionId = null;
+
+function goToAIPage() {
+    window.location.href = '/ai';
+}
+
+function sendQuickMessage() {
+    var input = document.getElementById('quick-input');
+    var msg = input.value.trim();
+    if (!msg) return;
+    fetch('/api/chat', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: msg})
+    }).then(r => r.json()).then(data => {
+        if (data.trigger_generation) generateDiscoveryPlaylist();
+        document.getElementById('vibe-input-area').style.display = 'none';
+        input.value = '';
+    }).catch(() => {});
+}
+
+// ── Debussy Onboarding Logic ──
+function closeDebussyModal() {
+    document.getElementById('debussy-welcome-modal').style.display = 'none';
+}
+
+function sendDebussyMessage() {
+    const input = document.getElementById('debussy-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const chatArea = document.getElementById('debussy-chat-area');
+    chatArea.style.display = 'block';
+
+    // Append User Message
+    chatArea.innerHTML += `<div class="chat-bubble-user"><span>${escapeHtml(text)}</span></div>`;
+    input.value = '';
+
+    // Show Loading
+    const loadId = 'loading-' + Date.now();
+    chatArea.innerHTML += `<div id="${loadId}" class="chat-bubble-ai"><span style="color:#9ca3af;">Debussy is typing...</span></div>`;
+    chatArea.scrollTop = chatArea.scrollHeight;
+
+    // Call the backend API
+    fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: text, session_id: debussySessionId})
+    }).then(r => r.json()).then(data => {
+        document.getElementById(loadId).remove();
+
+        // Save the session so conversation persists
+        if (data.session_id) debussySessionId = data.session_id;
+
+        // Append AI Message
+        chatArea.innerHTML += `<div class="chat-bubble-ai"><span>${escapeHtml(data.reply)}</span></div>`;
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        if (data.trigger_generation) {
+            generateDiscoveryPlaylist();
+            setTimeout(() => {
+                closeDebussyModal();
+            }, 1800); // Close automatically after short delay
+        }
+    }).catch(() => {
+        document.getElementById(loadId).remove();
+        chatArea.innerHTML += `<div class="chat-bubble-ai"><span>Network error. Please try again.</span></div>`;
+    });
+}
+
+function generateDiscoveryPlaylist() {
+    fetch('/api/generate_playlist').then(r => r.json()).then(data => {
+        const list = document.getElementById('generated-tracks');
+        list.innerHTML = ''; currentTrackIds = [];
+        generatedQueue = buildPaletteQueue(data.tracks, 'generated');
+
+        data.tracks.forEach(function(t, index) {
+            currentTrackIds.push(t.id);
+            var li = document.createElement('li');
+            li.className = 'recent-item';
+            li.onclick = function() {
+                playTrack(generatedQueue[index], generatedQueue, index);
+            };
+
+            const trackBg = generatedQueue[index].bg;
+            const genreHtml = t.genre ? ` <span class="genre-badge" data-genre="${escapeHtml(t.genre)}">${escapeHtml(t.genre)}</span>` : '';
+
+            li.innerHTML = `
+                <div style="background:${trackBg};width:48px;height:48px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div class="recent-name">${escapeHtml(t.title)}</div>
+                    <div class="recent-desc">${escapeHtml(t.artist)}${genreHtml}</div>
+                </div>
+                <div class="row-actions">
+                    <button class="row-btn play" onclick="event.stopPropagation(); playTrack(generatedQueue[${index}], generatedQueue, ${index});" aria-label="Play">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </button>
+                    <button class="row-btn add" onclick="event.stopPropagation(); addGeneratedTrackToLibrary(${index});">+ Library</button>
+                </div>
+            `;
+            list.appendChild(li);
+        });
+        document.getElementById('active-generation').style.display = 'block';
+    });
+}
+
+function savePlaylist() {
+    fetch('/api/save_playlist', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({track_ids: currentTrackIds})
+    }).then(r => r.json()).then(data => { if (data.success) window.location.reload(); });
+}
+</script>
+</body>
+</html>

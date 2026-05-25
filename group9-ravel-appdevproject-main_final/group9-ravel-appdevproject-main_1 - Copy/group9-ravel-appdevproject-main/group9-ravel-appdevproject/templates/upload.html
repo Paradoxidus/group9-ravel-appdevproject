@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ravel - Upload Music</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; }
+        .sidebar { width: 240px; min-width: 240px; height: 100vh; position: fixed; top: 0; left: 0; background: white; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; z-index: 50; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 22px 20px 18px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+        .logo-circle { width: 40px; height: 40px; background: #1a237e; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .sidebar-brand h2 { font-size: 17px; font-weight: 800; color: #111; }
+        .sidebar-brand p  { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 3px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; color: #6b7280; text-decoration: none; transition: background 0.15s, color 0.15s; width: 100%; }
+        .nav-link:hover { background: #f5f5f7; color: #111; }
+        .nav-link.active { background: #111; color: white; }
+        .nav-link svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .main-content { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; background: white; }
+        .top-bar { background: white; border-bottom: 1px solid #f0f0f0; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+        .top-bar-title { font-size: 20px; font-weight: 800; color: #111; }
+        .content-area { padding: 40px 32px; flex: 1; max-width: 560px; }
+        .page-title { font-size: 26px; font-weight: 800; color: #111; margin-bottom: 4px; }
+        .page-subtitle { font-size: 14px; color: #9ca3af; margin-bottom: 32px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; color: #111; margin-bottom: 8px; }
+        .form-input, .form-select {
+            width: 100%; padding: 13px 16px; border: 1.5px solid #e5e7eb; border-radius: 10px;
+            background: #fafafa; color: #111; font-size: 15px; font-family: inherit;
+            transition: border-color 0.2s, background 0.2s; outline: none;
+        }
+        .form-input:focus, .form-select:focus { border-color: #3b82f6; background: white; }
+        .form-select { cursor: pointer; }
+        .submit-btn {
+            width: 100%; padding: 14px; background: #111; color: white; border: none;
+            border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
+            transition: background 0.2s; margin-top: 8px;
+        }
+        .submit-btn:hover { background: #333; }
+        .alert-success {
+            background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d;
+            border-radius: 10px; padding: 13px 16px; font-size: 14px; margin-bottom: 24px;
+        }
+        .alert-error {
+            background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c;
+            border-radius: 10px; padding: 13px 16px; font-size: 14px; margin-bottom: 24px;
+        }
+        .musician-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 20px;
+            padding: 6px 14px; font-size: 12px; font-weight: 600; color: #7c3aed;
+            margin-bottom: 28px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </div>
+        <div class="sidebar-brand"><h2>Ravel</h2><p>AI Music Agent</p></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+        </a>
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
+        </a>
+        <a href="/ai" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none"/><path d="M9 15s1 1.5 3 1.5 3-1.5 3-1.5"/></svg>AI
+        </a>
+        <a href="/library" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Library
+        </a>
+        <a href="/profile" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+        </a>
+        <a href="/upload" class="nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>Upload
+        </a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="top-bar">
+        <span class="top-bar-title">Upload Music</span>
+    </div>
+
+    <div class="content-area">
+        <div class="page-title">Upload a Track</div>
+        <div class="page-subtitle">Your music will be tagged for the AI to recommend to listeners who match your genre</div>
+
+        <div class="musician-badge">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            Musician Account
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Artist / Band Name</label>
+                <input class="form-input" type="text" name="artist_name"
+                       value="{{ default_artist }}" required placeholder="Your artist or band name">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Track Title</label>
+                <input class="form-input" type="text" name="title" required placeholder="Name of the song">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Genre</label>
+                <select class="form-select" name="genre" required>
+                    <option value="" disabled selected>Select a genre</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Indie Rock">Indie Rock</option>
+                    <option value="Synthwave">Synthwave</option>
+                    <option value="Acoustic">Acoustic</option>
+                    <option value="Hip-Hop">Hip-Hop</option>
+                    <option value="R&B">R&amp;B</option>
+                    <option value="Electronic">Electronic</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Classical">Classical</option>
+                    <option value="Metal">Metal</option>
+                    <option value="Folk">Folk</option>
+                    <option value="Lo-Fi">Lo-Fi</option>
+                    <option value="Alternative">Alternative</option>
+                    <option value="Soul">Soul</option>
+                    <option value="Reggae">Reggae</option>
+                    <option value="OPM">OPM</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Audio File (.mp3)</label>
+                <input class="form-input" type="file" name="audio_file" accept=".mp3" required style="padding: 10px 16px;">
+            </div>
+
+            <button type="submit" class="submit-btn">Upload Track</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

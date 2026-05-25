@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ravel - Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; }
+        .sidebar { width: 240px; min-width: 240px; height: 100vh; position: fixed; top: 0; left: 0; background: white; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; z-index: 50; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 22px 20px 18px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+        .logo-circle { width: 40px; height: 40px; background: #1a237e; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .sidebar-brand h2 { font-size: 17px; font-weight: 800; color: #111; }
+        .sidebar-brand p  { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 3px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; color: #6b7280; text-decoration: none; transition: background 0.15s, color 0.15s; width: 100%; }
+        .nav-link:hover { background: #f5f5f7; color: #111; }
+        .nav-link.active { background: #111; color: white; }
+        .nav-link svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .main-content { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; background: white; }
+        .top-bar { background: white; border-bottom: 1px solid #f0f0f0; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+        .top-bar-title { font-size: 20px; font-weight: 800; color: #111; }
+        .top-bar-right { display: flex; gap: 10px; align-items: center; }
+        .icon-btn { background: #f3f4f6; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
+        .icon-btn:hover { background: #e5e7eb; }
+        /* Profile Content */
+        .hero { background: linear-gradient(160deg, #0d0d1a 0%, #111827 50%, #1a1a2e 100%); padding: 48px 32px 40px; display: flex; align-items: center; gap: 32px; }
+        .avatar-ring { width: 96px; height: 96px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #0072f5, #6b21a8); flex-shrink: 0; }
+        .avatar-inner { width: 100%; height: 100%; border-radius: 50%; background: #1a237e; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; color: white; }
+        .hero-info { display: flex; flex-direction: column; gap: 6px; }
+        .hero-name { font-size: 28px; font-weight: 800; color: white; }
+        .hero-email { font-size: 14px; color: #9ca3af; }
+        .hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; color: #c4b5fd; letter-spacing: 0.3px; width: fit-content; }
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid #f0f0f0; }
+        .stat-cell { display: flex; flex-direction: column; align-items: center; padding: 20px 10px; gap: 4px; }
+        .stat-cell:not(:last-child) { border-right: 1px solid #f0f0f0; }
+        .stat-value { font-size: 26px; font-weight: 800; color: #111; }
+        .stat-label { font-size: 12px; color: #9ca3af; font-weight: 500; }
+        .content-area { padding: 32px; flex: 1; }
+        .section { margin-bottom: 36px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .section-title { font-size: 16px; font-weight: 700; color: #111; }
+        .see-all { font-size: 13px; color: #6b7280; text-decoration: none; cursor: pointer; }
+        .see-all:hover { color: #111; }
+        .playlist-list { display: flex; flex-direction: column; gap: 4px; }
+        .playlist-row { display: flex; align-items: center; gap: 14px; padding: 10px 10px; border-radius: 12px; cursor: pointer; transition: background 0.15s; }
+        .playlist-row:hover { background: #f5f7ff; }
+        .pl-thumb { width: 54px; height: 54px; border-radius: 10px; flex-shrink: 0; }
+        .pl-info { flex: 1; min-width: 0; }
+        .pl-title { font-size: 14px; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pl-meta { font-size: 12px; color: #9ca3af; margin-top: 3px; }
+        .pl-more { background: none; border: none; color: #d1d5db; cursor: pointer; padding: 4px; flex-shrink: 0; }
+        .empty-playlists { text-align: center; padding: 30px 0; color: #9ca3af; font-size: 13px; }
+        .history-list { display: flex; flex-direction: column; gap: 6px; }
+        .history-row { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: #fafafa; }
+        .history-row:hover { background: #f5f7ff; }
+        .history-dot { width: 38px; height: 38px; border-radius: 10px; background: #111827; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+        .history-info { flex: 1; min-width: 0; }
+        .history-title { font-size: 14px; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-meta { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+        .sugg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+        .sugg-card { border: 1px solid #eef0f3; border-radius: 14px; padding: 12px; background: white; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+        .sugg-card:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.06); }
+        .sugg-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sugg-meta { font-size: 12px; color: #6b7280; }
+        .genre-chip { display: inline-block; margin-top: 8px; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #eef2ff; color: #1e3a8a; }
+        .actions-list { display: flex; flex-direction: column; }
+        .action-row { display: flex; align-items: center; gap: 14px; padding: 14px 12px; border-bottom: 1px solid #f3f4f6; cursor: pointer; border-radius: 10px; transition: background 0.15s; }
+        .action-row:hover { background: #f9fafb; }
+        .action-row:last-child { border-bottom: none; }
+        .action-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .action-label { flex: 1; font-size: 14px; font-weight: 500; color: #111; }
+        .action-label.danger { color: #ef4444; }
+        .action-chevron { color: #d1d5db; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </div>
+        <div class="sidebar-brand"><h2>Ravel</h2><p>AI Music Agent</p></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+        </a>
+        <a href="/search" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
+        </a>
+        <a href="/ai" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none"/><path d="M9 15s1 1.5 3 1.5 3-1.5 3-1.5"/></svg>AI
+        </a>
+        <a href="/library" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Library
+        </a>
+        <a href="/profile" class="nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+        </a>
+    </nav>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <div class="top-bar">
+        <span class="top-bar-title">Profile</span>
+        <div class="top-bar-right">
+            <button class="icon-btn" onclick="window.location.href='/search'" aria-label="Search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="avatar-ring">
+            <div class="avatar-inner">{{ username[0] | upper }}</div>
+        </div>
+        <div class="hero-info">
+            <div class="hero-name">{{ username }}</div>
+            <div class="hero-email">{{ email }}</div>
+            <div class="hero-badge">{% if user_type == 'Musician' %}🎸 Musician{% else %}🎧 Ravel Listener{% endif %}</div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-cell"><span class="stat-value">{{ playlist_count }}</span><span class="stat-label">Playlists</span></div>
+        <div class="stat-cell"><span class="stat-value">{{ total_tracks }}</span><span class="stat-label">Tracks Saved</span></div>
+        <div class="stat-cell"><span class="stat-value">{{ ai_count }}</span><span class="stat-label">AI Chats</span></div>
+    </div>
+
+    <div class="content-area">
+        <!-- Recent Playlists -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Recent Playlists</span>
+                <a class="see-all" href="/library">See all &rarr;</a>
+            </div>
+            {% if playlists %}
+            <div class="playlist-list">
+                {% for pl in playlists[:4] %}
+                <div class="playlist-row" onclick="window.location.href='/library'">
+                    <div class="pl-thumb" style="background:linear-gradient(160deg,
+                        {% if loop.index % 5 == 1 %}#0d0019 0%,#2d0050 50%,#6b21a8 100%
+                        {% elif loop.index % 5 == 2 %}#0c1a2e 0%,#1e3a5f 50%,#4a8fc1 100%
+                        {% elif loop.index % 5 == 3 %}#1a1810 0%,#2e2416 50%,#3a2e1c 100%
+                        {% elif loop.index % 5 == 4 %}#0f0f0f 0%,#1c1c1c 50%,#2a2219 100%
+                        {% else %}#1a1a2e 0%,#16213e 50%,#0f3460 100%{% endif %});"></div>
+                    <div class="pl-info">
+                        <div class="pl-title">{{ pl.title }}</div>
+                        <div class="pl-meta">{{ pl.track_count }} tracks &middot; {{ pl.date }}</div>
+                    </div>
+                    <button class="pl-more" aria-label="More">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-playlists">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" style="display:block;margin:0 auto 10px;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                No playlists yet &mdash; try the AI tab!
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Listening History</span>
+                <a class="see-all" href="/library">View library &rarr;</a>
+            </div>
+            {% if recent_listens %}
+            <div class="history-list">
+                {% for item in recent_listens[:8] %}
+                <div class="history-row">
+                    <div class="history-dot">♪</div>
+                    <div class="history-info">
+                        <div class="history-title">{{ item.title }}</div>
+                        <div class="history-meta">{{ item.artist }} &middot; {{ item.genre or 'Unknown genre' }} &middot; {{ item.listened_at[:16] if item.listened_at else '' }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-playlists">No listening history yet. Play tracks from Search, AI, or Library to build your profile.</div>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Because You Listened{% if top_genres %}: {{ top_genres | join(', ') }}{% endif %}</span>
+                <a class="see-all" href="/search">Find more &rarr;</a>
+            </div>
+            {% if suggestions %}
+            <div class="sugg-grid">
+                {% for s in suggestions[:8] %}
+                <div class="sugg-card js-sugg-card" data-track-id="{{ s.track_id }}" data-title="{{ s.title | e }}" data-artist="{{ s.artist | e }}" data-genre="{{ (s.genre or '') | e }}">
+                    <div class="sugg-title">{{ s.title }}</div>
+                    <div class="sugg-meta">{{ s.artist }}</div>
+                    <span class="genre-chip">{{ s.genre or 'Unknown' }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-playlists">No track suggestions yet. Start listening to get personalized recommendations.</div>
+            {% endif %}
+        </div>
+
+        <!-- Account Actions -->
+        <div class="section">
+            <div class="section-header"><span class="section-title">Account</span></div>
+            <div class="actions-list">
+                <div class="action-row" onclick="window.location.href='/library'">
+                    <div class="action-icon" style="background:#f0f4ff;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0072f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <span class="action-label">My Library</span>
+                    <svg class="action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                <div class="action-row" onclick="window.location.href='/ai'">
+                    <div class="action-icon" style="background:#f5f0ff;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="9" cy="10" r="1.5" fill="#7c3aed" stroke="none"/><circle cx="15" cy="10" r="1.5" fill="#7c3aed" stroke="none"/><path d="M9 15s1 1.5 3 1.5 3-1.5 3-1.5"/></svg>
+                    </div>
+                    <span class="action-label">AI Chat</span>
+                    <svg class="action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                {% if user_type == 'Musician' %}
+                <div class="action-row" onclick="window.location.href='/upload'">
+                    <div class="action-icon" style="background:#f0fdf4;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                    </div>
+                    <span class="action-label">Upload Music</span>
+                    <svg class="action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                {% endif %}
+                <div class="action-row" onclick="window.location.href='/logout'">
+                    <div class="action-icon" style="background:#fff0f0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    </div>
+                    <span class="action-label danger">Log Out</span>
+                    <svg class="action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function playSuggestedTrack(trackId, title, artist, genre) {
+    fetch('/api/log_listen', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({track_id: Number(trackId), genre: genre || ''})
+    }).finally(() => {
+        window.location.href = '/search';
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-sugg-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+            playSuggestedTrack(
+                card.dataset.trackId,
+                card.dataset.title,
+                card.dataset.artist,
+                card.dataset.genre
+            );
+        });
+    });
+});
+</script>
+
+</body>
+</html>
