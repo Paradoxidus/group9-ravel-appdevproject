@@ -125,7 +125,7 @@ python setup_db.py
 ### Step 4: Edit the WSGI File
 PythonAnywhere uses a WSGI file to connect the web server to your Flask application.
 
-1. Still in the Web tab, click the link to your WSGI configuration file (it will look like /var/www/yourusername_pythonanywhere_com_wsgi.py).
+1. Still in the Web tab, click the link to your WSGI configuration file (it will look like `/var/www/yourusername_pythonanywhere_com_wsgi.py`).
 
 2. Delete the boilerplate code inside and replace it with the following configuration to ensure your environment variables and Flask app load correctly:
 ```
