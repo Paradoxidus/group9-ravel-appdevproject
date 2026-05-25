@@ -18,3 +18,12 @@ Agentic AI Assistant (Debussy): Ravel features an integrated conversational AI a
 - Dynamic Library Management: Users can create custom playlists, save tracks, and manage their listening history seamlessly.
 
 - Algorithmic Discovery: The platform tracks user listening habits to generate customized suggestions and highlights artists with lower stream counts to democratize exposure.
+
+## 3. Tech Stack
+- Frontend: HTML, CSS, JavaScript (Custom UI with interactive player overlays and modals).
+
+- Backend: Python with the Flask web framework.
+
+- Database: SQLite3 for managing users, artists, tracks, playlists, and AI chat sessions.
+
+- AI Integration: OpenAI Python client connected to the DashScope API (Qwen3.5-plus model) for the Debussy assistant.
