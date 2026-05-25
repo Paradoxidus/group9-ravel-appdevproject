@@ -1,6 +1,15 @@
 # Welcome to Ravel's Github Repository! 
 
-Here are the programming files, code, scripts, and how to set up the code, 
+Here are the programming files, code, scripts, and how to set up the code.
+
+## Contributors
+
+| Name   | Role        | GitHub |
+|--------|-------------|--------|
+| Aaron  | Fullstack    | [@Paradoxidus](https://github.com/Paradoxidus) |
+| Maria  | Fullstack     | n/a|
+| James Bongcac   | Fullstack    | [YuanSol30]([https://github.com/juan-username](https://github.com/YuanSol30)) |
+
 
 ## 1. What is Ravel?
 Ravel is a web-based music streaming application similar to Spotify, YouTube Music, Apple Music, etc. Its friendly UI helps users navigate and create their own musical paradise hub with the tap of their fingertips without the unnecessary excruciating ads. All for a reasonable price! Blending AI-integrated systems and artist-focus algorithms, Ravel ensures that everyone has a voice!
