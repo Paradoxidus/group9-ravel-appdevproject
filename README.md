@@ -21,8 +21,9 @@ Agentic AI Assistant (Debussy): Ravel features an integrated conversational AI a
 - Backend: Python with the Flask web framework.
 - Database: SQLite3 for managing users, artists, tracks, playlists, and AI chat sessions.
 - AI Integration: OpenAI Python client connected to the DashScope API (Qwen3.5-plus model) for the Debussy assistant. **Take note**: DashScope API is part of the Alibaba Cloud. You may need to sign up to use their services. You may also use their free trial to get almost a million credits!
+- Deployment: PythonAnywhere.
 
-## 4. Local Setup & Installation
+## 4A. Local Setup & Installation
 Follow these steps to get Ravel running on your local machine.
 
 ### a. Prerequisites
@@ -62,3 +63,16 @@ python app.py
 
 6. Access Ravel:
 Open your web browser and go to http://127.0.0.1:5000 to start using the app.
+
+
+## 4B. Deployment
+Ravel is webhosted using PythonAnywhere due to its free hosting services compared to other webhosting alternatives.
+
+### 1. Upload your files
+Create a PythonAnywhere account and log into your Dashboard.
+
+Go to the Files tab.
+
+Upload the entire Ravel project folder into a directory (e.g., `/home/yourusername/mysite`). Ensure `app.py`, `setup_db.py`, and the templates/static folders are all present.
+
+Upload your `.env` file containing your `DASHSCOPE_API_KEY` into this same directory.
