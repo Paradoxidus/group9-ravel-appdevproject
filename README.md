@@ -27,3 +27,8 @@ Agentic AI Assistant (Debussy): Ravel features an integrated conversational AI a
 - Database: SQLite3 for managing users, artists, tracks, playlists, and AI chat sessions.
 
 - AI Integration: OpenAI Python client connected to the DashScope API (Qwen3.5-plus model) for the Debussy assistant.
+
+```
+git clone https://github.com/yourusername/ravel.git
+cd ravel
+```
