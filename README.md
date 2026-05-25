@@ -104,3 +104,43 @@ python setup_db.py
 ```
 /home/yourusername/.virtualenvs/ravel-env
 ```
+4. Scroll to the Code section and set the Source code directory to:
+```
+/home/yourusername/mysite
+```
+
+### Step 4: Edit the WSGI File
+PythonAnywhere uses a WSGI file to connect the web server to your Flask application.
+
+1. Still in the Web tab, click the link to your WSGI configuration file (it will look like /var/www/yourusername_pythonanywhere_com_wsgi.py).
+
+2. Delete the boilerplate code inside and replace it with the following configuration to ensure your environment variables and Flask app load correctly:
+```
+import sys
+import os
+from dotenv import load_dotenv
+
+# 1. Expand Python classes path with your app's path
+project_home = '/home/yourusername/mysite'
+if project_home not in sys.path:
+    sys.path = [project_home] + sys.path
+
+# 2. Load environment variables from your .env file
+load_dotenv(os.path.join(project_home, '.env'))
+
+# 3. Import the Flask app
+from app import app as application
+```
+**(Note: Replace yourusername with your actual PythonAnywhere username and mysite with your specific folder name if different).**
+
+### Step 5: Reload and Launch
+Go back to the Web tab and click the green Reload button at the top. Your instance of Ravel should now be live at https://yourusername.pythonanywhere.com!
+
+*** This covers everything needed to get Ravel live. Let me know if you'd like to add a "Future Features" or "Contributing" section to round out the bottom of the repository!
+
+### 6. Future Roadmap & Known Limitations
+Ravel was developed as an exploratory application development project. While fully functional, there are several areas planned for future expansion:
+- Advanced AI Context: Currently, Debussy handles immediate conversational context. Future updates would implement a more robust Retrieval-Augmented Generation (RAG) pipeline to give the assistant deeper memory of a user's long-term listening history.
+- Expanded Audio Support: The upload feature is currently limited to .mp3 files. Adding support for .wav and .flac with automatic compression is a priority.
+- Enhanced Recommendation Algorithm: The current algorithm tracks play counts and genre tags. The goal is to transition to a more complex machine-learning model to analyze audio features directly for better underrepresented artist matching.
+- Production Database: Migrating from the current SQLite3 setup to a more scalable solution like PostgreSQL for handling larger concurrent user bases.
