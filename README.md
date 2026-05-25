@@ -6,9 +6,9 @@ Here are the programming files, code, scripts, and how to set up the code.
 
 | Name   | Role        | GitHub |
 |--------|-------------|--------|
-| Aaron  | Fullstack    | [@Paradoxidus](https://github.com/Paradoxidus) |
-| Maria  | Fullstack     | n/a|
-| James Bongcac   | Fullstack    | [YuanSol30]([https://github.com/juan-username](https://github.com/YuanSol30)) |
+| Aaron Novesteras  | Fullstack    | [@Paradoxidus](https://github.com/Paradoxidus) |
+| Rexter Gonzales  | Fullstack     | n/a|
+| James Bongcac   | Fullstack    | [@YuanSol30](https://github.com/YuanSol30) |
 
 
 ## 1. What is Ravel?
