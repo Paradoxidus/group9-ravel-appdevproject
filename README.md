@@ -46,8 +46,8 @@ Follow these steps to get Ravel running on your local machine.
 ### b. Step-by-Step Guide
 1. Clone the repository:
 ```
-git clone https://github.com/yourusername/ravel.git
-cd ravel
+git clone https://github.com/Paradoxidus/group9-ravel-appdevproject.git
+cd group9-ravel-appdevproject
 ```
 2. Install the required dependencies:
 You will need Flask, python-dotenv, and the OpenAI client.
