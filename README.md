@@ -2,6 +2,12 @@
 
 Here are the programming files, code, scripts, and how to set up the code.
 
+## TL;DR
+- **What it is:** Web-based music streaming app (Spotify-style) with listener & musician portals
+- **AI feature:** “Debussy” chat assistant for mood-based playlist creation and discovery support
+- **Stack:** Flask, SQLite, HTML/CSS/JS, OpenAI Python SDK (DashScope/Qwen model endpoint), PythonAnywhere
+- **Key features:** playlist management, uploads (.mp3), listening history, AI chat sessions
+
 ## Contributors
 
 | Name   | Role        | GitHub |
@@ -33,8 +39,13 @@ Agentic AI Assistant (Debussy): Ravel features an integrated conversational AI a
 - Frontend: HTML, CSS, JavaScript (Custom UI with interactive player overlays and modals).
 - Backend: Python with the Flask web framework.
 - Database: SQLite3 for managing users, artists, tracks, playlists, and AI chat sessions.
-- AI Integration: OpenAI Python client connected to the DashScope API (Qwen3.5-plus model) for the Debussy assistant. **Take note**: DashScope API is part of the Alibaba Cloud. You may need to sign up to use their services. You may also use their free trial to get almost a million credits!
-- Deployment: PythonAnywhere.
+
+### 4. AI Assistant (Debussy)
+Debussy is a conversational assistant integrated into the app.
+- **Client:** OpenAI Python SDK (OpenAI-compatible API interface)
+- **Provider/Endpoint:** Alibaba Cloud DashScope
+- **Model:** Qwen (e.g., qwen3.5-plus)
+- **Config:** requires `DASHSCOPE_API_KEY` in a `.env` file
 
 ## 4A. Local Setup & Installation
 Follow these steps to get Ravel running on your local machine.
