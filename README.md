@@ -12,9 +12,9 @@ Here are the programming files, code, scripts, and how to set up the code.
 
 | Name   | Contributions        | GitHub |
 |--------|-------------|--------|
-| Aaron Novesteras  | System Architecture and Pipeline, AI Orchestration & Prompt Engineering, Database Schema Design, Backend-to-Frontend Integration     | [@Paradoxidus](https://github.com/Paradoxidus) |
-| Rexter Gonzales  | Technical Manual, QA testing, GitHub repo, Architectural Design (Figma), Functional and Non-Functional Requirements     | n/a|
-| James Bongcac   | QA testing, UI/UX, Architectural Design (Figma), Functional and Non-Functional Requirements   | [@YuanSol30](https://github.com/YuanSol30) |
+| Aaron Novesteras  | Lead Architect & AI Integration: Architected the Flask backend application and designed the 9-table SQLite relational database schema to manage user states and track metadata. Engineered the "Debussy" agent using the DashScope (Qwen3.5-plus) API, crafting dynamic system prompts to trigger targeted discovery algorithms based on user listening history. Directed the agentic implementation of the full stack (Python, HTML, CSS, JS) by translating high-level system requirements into deployable code[cite: 1, 9].   | [@Paradoxidus](https://github.com/Paradoxidus) |
+| Rexter Gonzales  | Documentation & QA: Authored the comprehensive technical manual, structured the GitHub repository documentation, and executed quality assurance testing across the application.  | n/a|
+| James Bongcac   | UI/UX & QA: Directed user interface design paradigms, verified user experience flows for the web-based music player and library views, and assisted in frontend QA testing.  | [@YuanSol30](https://github.com/YuanSol30) |
 
 ## Deployment Link (May be closed due to limited-tier selection)
 https://melodymelon23.pythonanywhere.com/login
