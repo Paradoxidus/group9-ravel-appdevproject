@@ -10,11 +10,11 @@ Here are the programming files, code, scripts, and how to set up the code.
 
 ## Contributors
 
-| Name   | Role        | GitHub |
+| Name   | Contributions        | GitHub |
 |--------|-------------|--------|
-| Aaron Novesteras  | Fullstack    | [@Paradoxidus](https://github.com/Paradoxidus) |
-| Rexter Gonzales  | Fullstack     | n/a|
-| James Bongcac   | Fullstack    | [@YuanSol30](https://github.com/YuanSol30) |
+| Aaron Novesteras  | System Architecture and Pipeline, AI Orchestration & Prompt Engineering, Database Schema Design, Backend-to-Frontend Integration     | [@Paradoxidus](https://github.com/Paradoxidus) |
+| Rexter Gonzales  | Technical Manual, QA testing, GitHub repo, Architectural Design (Figma), Functional and Non-Functional Requirements     | n/a|
+| James Bongcac   | QA testing, UI/UX, Architectural Design (Figma), Functional and Non-Functional Requirements   | [@YuanSol30](https://github.com/YuanSol30) |
 
 ## Deployment Link (May be closed due to limited-tier selection)
 https://melodymelon23.pythonanywhere.com/login
